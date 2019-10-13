@@ -371,6 +371,7 @@ void CAddrSearchDlg::OnBnClickedButton3()
 	}
 	CIniFile::GetInstance()->RegisterModule("保存");
 	CIniFile::GetInstance()->SetValue("地址信息",strList);
+	OnBnClickedButton3()
 }
 
 void CAddrSearchDlg::AddAddrInfo(CString strInfo)

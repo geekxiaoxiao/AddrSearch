@@ -42,8 +42,8 @@ void  CIniFile::RegisterModule(CString strName)
 
 void  CIniFile::GetValue(CString strKey, CString &strValue,CString strDefault)
 {
-	char szBuf[2048];
-	::GetPrivateProfileString(m_strModuleName,strKey,strDefault,szBuf,2048,GetAppPath()+CONFIG_FILE_NAME);
+	char szBuf[65535];
+	::GetPrivateProfileString(m_strModuleName,strKey,strDefault,szBuf,65535,GetAppPath()+CONFIG_FILE_NAME);
 	strValue=szBuf;
 }
 
