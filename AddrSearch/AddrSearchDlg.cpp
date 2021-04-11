@@ -225,6 +225,7 @@ void CAddrSearchDlg::OnBnClickedButton1()
 		InitializeSigCopyMemory(dwProcessID, ModName.GetBuffer());
 		DWORD modBase=0;
 		DWORD dwData = GeekXFindPattern(strCode.GetBuffer(), &modBase, nOffset);//新的寻址核心函数 采用目标进程块内存全复制 到 本进程  的方式 用 指针法遍历地址 速度极快
+		DWORD AddressVal = 0;
 		FinalizeScan();
 		
 		//DWORD dwData=GetCallAddr(po.GetProcessHandle(),strCode,nOffset);
@@ -233,29 +234,29 @@ void CAddrSearchDlg::OnBnClickedButton1()
 
 		{
 			CMemOpt mo(po.GetProcessHandle(),dwData);
-			mo.ReadMem(&dwData,4);
+			mo.ReadMem(&AddressVal,4);
 		}
 		else if (m_lstInfo.GetItemText(i,3)=="2")
 		{
 			CMemOpt mo(po.GetProcessHandle(),dwData);
-			mo.ReadMem(&dwData,2);
+			mo.ReadMem(&AddressVal,2);
 		}
 		else if (m_lstInfo.GetItemText(i,3)=="3")
 		{
 			CMemOpt mo(po.GetProcessHandle(),dwData);
-			mo.ReadMem(&dwData,1);
+			mo.ReadMem(&AddressVal,1);
 		}
 		else if (m_lstInfo.GetItemText(i,3)=="4")
 		{
 			int nCallOffset=0;
 			CMemOpt mo(po.GetProcessHandle(),dwData);
 			mo.ReadMem(&nCallOffset,4);
-			dwData=dwData+nCallOffset+4;
+			AddressVal =dwData+nCallOffset+4;
 		}
 		if (Mcheck ==true)
-			dwData = dwData - modBase;
+			AddressVal = AddressVal - modBase;
 		CString strMsg;
-		strMsg.Format("#define %s 0x%X",m_lstInfo.GetItemText(i,0),dwData);
+		strMsg.Format("#define %s 0x%X",m_lstInfo.GetItemText(i,0), AddressVal);
 		AddText(strMsg);
 	}
 
@@ -371,7 +372,7 @@ void CAddrSearchDlg::OnBnClickedButton3()
 	}
 	CIniFile::GetInstance()->RegisterModule("保存");
 	CIniFile::GetInstance()->SetValue("地址信息",strList);
-	OnBnClickedButton3()
+	OnBnClickedButton3();
 }
 
 void CAddrSearchDlg::AddAddrInfo(CString strInfo)
