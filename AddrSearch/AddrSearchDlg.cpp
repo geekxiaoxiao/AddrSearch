@@ -229,6 +229,10 @@ void CAddrSearchDlg::OnBnClickedButton1()
 		FinalizeScan();
 		
 		//DWORD dwData=GetCallAddr(po.GetProcessHandle(),strCode,nOffset);
+		if (m_lstInfo.GetItemText(i, 3) == "0")
+		{
+			dwAddress = dwData;
+		}
 		if (m_lstInfo.GetItemText(i,3)=="1")
 
 
@@ -372,7 +376,7 @@ void CAddrSearchDlg::OnBnClickedButton3()
 	}
 	CIniFile::GetInstance()->RegisterModule("保存");
 	CIniFile::GetInstance()->SetValue("地址信息",strList);
-	OnBnClickedButton3();
+	
 }
 
 void CAddrSearchDlg::AddAddrInfo(CString strInfo)
