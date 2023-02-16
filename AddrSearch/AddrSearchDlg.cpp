@@ -231,7 +231,7 @@ void CAddrSearchDlg::OnBnClickedButton1()
 		//DWORD dwData=GetCallAddr(po.GetProcessHandle(),strCode,nOffset);
 		if (m_lstInfo.GetItemText(i, 3) == "0")
 		{
-			dwAddress = dwData;
+			AddressVal = dwData;
 		}
 		if (m_lstInfo.GetItemText(i,3)=="1")
 
