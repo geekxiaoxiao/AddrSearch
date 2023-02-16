@@ -11,8 +11,8 @@ using std::string;
 bool bIsLocal = false;
 bool bInitialized = false;
 BYTE *FFXiMemory = NULL;
-DWORD BaseAddress = NULL;
-DWORD ModSize = NULL;
+DWORD_PTR BaseAddress = NULL;
+DWORD_PTR ModSize = NULL;
 
 
 typedef struct checks
@@ -60,7 +60,7 @@ GeekX_API void _stdcall InitializeSigCopyMemory(DWORD ProcessID, const char* Mod
 		if(!_stricmp(uModule.szModule,Module))
 		{
 			FinalizeScan();
-			BaseAddress = (DWORD)uModule.modBaseAddr;
+			BaseAddress = (DWORD_PTR)uModule.modBaseAddr;
 			
 			ModSize = uModule.modBaseSize;
 		 
@@ -108,7 +108,7 @@ GeekX_API void _stdcall FinalizeScan()
 // 参    数: offset	偏移 一般为0 可以自己得结果后再加 这里可以不需要 
 //************************************************************
 
-GeekX_API DWORD _stdcall GeekXFindPattern(const char* szPattern, DWORD*pmodulBase ,int offset )//初始化
+GeekX_API DWORD_PTR _stdcall GeekXFindPattern(const char* szPattern, DWORD_PTR*pmodulBase ,int offset )//初始化
 {
 
 	//Get Pattern length
@@ -206,7 +206,7 @@ GeekX_API DWORD _stdcall GeekXFindPattern(const char* szPattern, DWORD*pmodulBas
 	//Iterate the Module.
 	for	(char* 
 		addr = (char*)memchr(mBaseAddr	, buffer[0], mModSize - buffersize);
-		addr && (DWORD)addr < (DWORD)((DWORD)mBaseAddr + mModSize - buffersize); 
+		addr && (DWORD_PTR)addr < (DWORD_PTR)((DWORD_PTR)mBaseAddr + mModSize - buffersize);
 		addr = (char*)memchr(addr+1		, buffer[0], mModSize - buffersize - (addr+1 - mBaseAddr))
 		)
 	{
@@ -226,16 +226,16 @@ GeekX_API DWORD _stdcall GeekXFindPattern(const char* szPattern, DWORD*pmodulBas
 		if(bMatching)
 		{
 			//Find address wanted in FFXI's memory space - not ours.
-			DWORD Address = NULL;
+			DWORD_PTR Address = NULL;
 			if(Dereference)
 			{
-				Address = (DWORD)*((void **)(addr + PtrOffset));
+				Address = (DWORD_PTR)*((void **)(addr + PtrOffset));
 				//OutputDebugPrintf("DEBUG_INFO |指针 %x\n", Address);
 				 
 			}else{
 				 
 					 
-				Address = BaseAddress + (DWORD)((addr + PtrOffset) - (DWORD)FFXiMemory- buffersize);
+				Address = BaseAddress + (DWORD_PTR)((addr + PtrOffset) - (DWORD_PTR)FFXiMemory- buffersize);
 				//OutputDebugPrintf("DEBUG_INFO |值 %x\n", Address);
 			}
 			//Clear buffer and return result.

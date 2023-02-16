@@ -9,6 +9,6 @@
 #endif
 
 void OutputDebugPrintf(const char* strOutputString, ...);
-GeekX_API DWORD _stdcall GeekXFindPattern(const char* szPattern, DWORD* pmodulBase , int offset = 0);
+GeekX_API DWORD_PTR _stdcall GeekXFindPattern(const char* szPattern, DWORD_PTR* pmodulBase , int offset = 0);
 GeekX_API void _stdcall InitializeSigCopyMemory(DWORD ProcessID, const char* szModule);
 GeekX_API void _stdcall FinalizeScan();

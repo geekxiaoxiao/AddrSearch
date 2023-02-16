@@ -57,4 +57,8 @@ public:
 	CString Me_ModuleName;
 	BOOL Mcheck;
 	afx_msg void OnBnClickedButton5();
+	// define 格式
+	BOOL B_define;
+	// uint64_t格式输出
+	BOOL B_Ifuint64;
 };

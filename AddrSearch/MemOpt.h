@@ -12,7 +12,7 @@
 class CMemOpt  
 {
 public:
-	CMemOpt(HANDLE hProcess,DWORD dwBase,int vOffset[]=NULL,int nCount=0);
+	CMemOpt(HANDLE hProcess, DWORD_PTR dwBase,int vOffset[]=NULL,int nCount=0);
 	virtual ~CMemOpt();
 	bool ReadMem(void *pBuf,int nCount);
 	bool WriteMem(void *pBuf,int nCount);

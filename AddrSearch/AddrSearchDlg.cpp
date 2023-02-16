@@ -58,6 +58,8 @@ CAddrSearchDlg::CAddrSearchDlg(CWnd* pParent /*=NULL*/)
 	, M_exeName(_T(""))
 	, Me_ModuleName(_T(""))
 	, Mcheck(FALSE)
+	, B_define(TRUE)
+	, B_Ifuint64(FALSE)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -74,6 +76,8 @@ void CAddrSearchDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT5, M_exeName);
 	DDX_Text(pDX, IDC_EDIT6, Me_ModuleName);
 	DDX_Check(pDX, IDC_CHECK1, Mcheck);
+	DDX_Radio(pDX, IDC_RADIO1, B_define);
+	DDX_Radio(pDX, IDC_RADIO2, B_Ifuint64);
 }
 
 BEGIN_MESSAGE_MAP(CAddrSearchDlg, CDialog)
@@ -123,9 +127,9 @@ BOOL CAddrSearchDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 	m_lstInfo.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 	// TODO: Add extra initialization here
-	Mcheck = true;
-	M_exeName="wechat.exe";
-	Me_ModuleName = "wechatwin.dll";
+	 
+	M_exeName="elementclient_64.exe";
+	Me_ModuleName = "elementclient_64.exe";
 	UpdateData(false);
 	CRect rect;
 	m_lstInfo.GetClientRect(&rect);
@@ -144,10 +148,13 @@ BOOL CAddrSearchDlg::OnInitDialog()
 		str=strtok(NULL,";");
 	}
 	m_cbType.AddString("地址");
-	m_cbType.AddString("内容(4)");
-	m_cbType.AddString("内容(2)");
-	m_cbType.AddString("内容(1)");
+	m_cbType.AddString("内容(4字节)");
+	m_cbType.AddString("内容(2字节)");
+	m_cbType.AddString("内容(1字节)");
+	
 	m_cbType.AddString("函数");
+	m_cbType.AddString("[指针内容](x_64 8字节)");
+	m_cbType.AddString("内容(8字节)");
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -223,15 +230,21 @@ void CAddrSearchDlg::OnBnClickedButton1()
 		strCode.Replace(" ","");
 
 		InitializeSigCopyMemory(dwProcessID, ModName.GetBuffer());
-		DWORD modBase=0;
-		DWORD dwData = GeekXFindPattern(strCode.GetBuffer(), &modBase, nOffset);//新的寻址核心函数 采用目标进程块内存全复制 到 本进程  的方式 用 指针法遍历地址 速度极快
-		DWORD AddressVal = 0;
+		DWORD_PTR modBase=0;
+		DWORD_PTR dwData = GeekXFindPattern(strCode.GetBuffer(), &modBase, nOffset);//新的寻址核心函数 采用目标进程块内存全复制dump 到 本进程  的方式 用 指针法遍历地址 速度极快
+		DWORD_PTR AddressVal = 0;
+		//CString str;
+		//str.Format("modBase:0x%llX", modBase); //调试输出64位16进制
+		//OutputDebugString(str);
+							
 		FinalizeScan();
 		
 		//DWORD dwData=GetCallAddr(po.GetProcessHandle(),strCode,nOffset);
 		if (m_lstInfo.GetItemText(i, 3) == "0")
 		{
 			AddressVal = dwData;
+			if (Mcheck == true)
+				AddressVal = AddressVal - modBase;
 		}
 		if (m_lstInfo.GetItemText(i,3)=="1")
 
@@ -256,11 +269,34 @@ void CAddrSearchDlg::OnBnClickedButton1()
 			CMemOpt mo(po.GetProcessHandle(),dwData);
 			mo.ReadMem(&nCallOffset,4);
 			AddressVal =dwData+nCallOffset+4;
+			if (Mcheck == true)
+				AddressVal = AddressVal - modBase;
 		}
-		if (Mcheck ==true)
-			AddressVal = AddressVal - modBase;
+		else if (m_lstInfo.GetItemText(i, 3) == "5")
+		{
+			int nCallOffset = 0;
+			CMemOpt mo(po.GetProcessHandle(), dwData);
+			mo.ReadMem(&nCallOffset, 4);
+			AddressVal = dwData + nCallOffset + 4;
+			if (Mcheck == true)
+				AddressVal = AddressVal - modBase;
+		}
+		else if (m_lstInfo.GetItemText(i, 3) == "6")
+		{
+			CMemOpt mo(po.GetProcessHandle(), dwData);
+			mo.ReadMem(&AddressVal, 8);
+		}
+		
 		CString strMsg;
-		strMsg.Format("#define %s 0x%X",m_lstInfo.GetItemText(i,0), AddressVal);
+		if (B_Ifuint64 == FALSE)
+		{
+			strMsg.Format("constexpr uint64_t %s 0x%llX", m_lstInfo.GetItemText(i, 0), AddressVal);
+		}
+		else
+		{
+			strMsg.Format("#define %s 0x%llX", m_lstInfo.GetItemText(i, 0), AddressVal);
+		}
+		
 		AddText(strMsg);
 	}
 
