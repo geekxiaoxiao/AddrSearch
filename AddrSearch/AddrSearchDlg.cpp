@@ -128,8 +128,8 @@ BOOL CAddrSearchDlg::OnInitDialog()
 	m_lstInfo.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 	// TODO: Add extra initialization here
 	 
-	M_exeName="elementclient_64.exe";
-	Me_ModuleName = "elementclient_64.exe";
+	M_exeName="xxxxxx.exe";
+	Me_ModuleName = "xxxxxx.exe";
 	UpdateData(false);
 	CRect rect;
 	m_lstInfo.GetClientRect(&rect);
