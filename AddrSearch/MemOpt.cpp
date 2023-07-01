@@ -22,7 +22,7 @@ CMemOpt::CMemOpt(HANDLE hProcess, DWORD_PTR dwBase,int vOffset[],int nCount)
 	if (nCount > 0)
 	{
 		DWORD_PTR dwAddr=0;
-		ReadOffsetMem(vOffset,nCount-1,&dwAddr,4);
+		ReadOffsetMem(vOffset,nCount-1,&dwAddr, sizeof(void*));
 		m_pBase=(void*)(dwAddr+vOffset[nCount-1]);
 	}
 }
@@ -51,7 +51,7 @@ bool CMemOpt::ReadOffsetMem(int vOffset[],int nSize,void *pBuf,int nCount)
 	DWORD_PTR dwAddr=0;
 	for (int i=0;i<nSize;i++)
 	{
-		if (!::ReadProcessMemory(m_hProcess,pBaseAddr,&dwAddr,4,&dwTemp))
+		if (!::ReadProcessMemory(m_hProcess,pBaseAddr,&dwAddr, sizeof(void*),&dwTemp))
 			return false;
 		pBaseAddr=(void*)(dwAddr+vOffset[i]);
 	}
